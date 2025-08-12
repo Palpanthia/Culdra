@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>カードテンプレート（生成用HTML）</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root{
+      --card-width:420px;
+      --card-height:660px;
+      --accent:#b92b2b;
+      --accent-contrast:#fff6f4;
+      --frame-radius:18px;
+      --border:8px;
+      --inner-gap:12px;
+    }
+    *{box-sizing:border-box}
+    body{
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+      background:#f6f6f6;
+      display:flex;
+      gap:24px;
+      align-items:flex-start;
+      justify-content:center;
+      min-height:100vh;
+      padding:28px
+    }
+    .controls{display:flex;flex-direction:column;gap:8px}
+    .controls button,.controls input[type="file"],.controls label{
+      padding:8px 12px;
+      border-radius:8px;
+      border:1px solid rgba(0,0,0,0.06);
+      cursor:pointer;
+      font-size:14px;
+      background:#fff;
+      transition: background-color 0.2s ease;
+    }
+    .controls button:hover {
+      background:#f0f0f0;
+    }
+    .card-wrap{
+      width:var(--card-width);
+      height:var(--card-height);
+      background:linear-gradient(180deg,rgba(0,0,0,0.04),rgba(255,255,255,0.02));
+      padding:18px;
+      border-radius:calc(var(--frame-radius) + 6px);
+      box-shadow:0 6px 18px rgba(0,0,0,0.12)
+    }
+    .card{
+      width:100%;
+      height:100%;
+      border-radius:var(--frame-radius);
+      background:var(--accent);
+      padding:var(--border);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:stretch;
+    }
+    .card-inner{
+      flex:1;
+      border-radius:calc(var(--frame-radius) - 6px);
+      background:var(--accent-contrast);
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px
+    }
+    .top-row{
+      display:flex;
+      gap:10px;
+      align-items:center
+    }
+    .cost-circle{
+      width:72px;
+      height:72px;
+      border-radius:50%;
+      background:var(--accent-contrast);
+      border:4px solid rgba(0,0,0,0.07);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      color:var(--accent);
+      font-size:38px;
+    }
+    .name-box{
+      flex:1;
+      height:64px;
+      background:var(--accent-contrast);
+      border-radius:10px;
+      border:3px solid rgba(0,0,0,0.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:24px;
+      font-weight:700;
+    }
+    .art{
+      flex:1;
+      background:#fff;
+      border-radius:10px;
+      border:3px solid rgba(0,0,0,0.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      overflow:hidden;
+      font-size:22px;
+      font-weight:500;
+      text-align:center;
+    }
+    .art-text{
+      position:absolute;
+      width:100%;
+      left:0;top:0;right:0;bottom:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:2;
+      pointer-events:none;
+      color:#333;
+      background:rgba(255,255,255,0.0);
+    }
+    .art.has-image .art-text{
+      display:none;
+    }
+    .ability{
+      flex:0 0 120px;
+      background:#fff;
+      border-radius:10px;
+      border:3px solid rgba(0,0,0,0.06);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      position:relative;
+      transition:flex-basis 0.3s;
+      padding:10px 10px 6px 100px;
+      min-height:100px;
+    }
+    .ability .icon{
+      width:88px;
+      height:88px;
+      opacity:0.92;
+      position:absolute;
+      left:0;
+      top:50%;
+      transform:translateY(-50%);
+    }
+    .ability-main{
+      width:100%;
+      font-size:16px;
+      font-weight:600;
+      margin-bottom:8px;
+      text-align:left;
+      word-break:break-word;
+    }
+    .ability-flavor{
+      width:100%;
+      font-size:13px;
+      color:#666;
+      text-align:left;
+      word-break:break-word;
+    }
+    /* アート画像の透明度を上げる */
+    .art.has-image::before{
+      content:"";
+      position:absolute;
+      left:0;top:0;right:0;bottom:0;
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      z-index:1;
+      opacity:1;
+      pointer-events:none;
+      background-image: var(--art-img);
+    }
+    .art.has-image{
+      background-image:none!important;
+    }
+    .art.has-image .art-text{
+      z-index:2;
+    }
+    .stat{
+      width:96px;
+      height:64px;
+      background:#fff;
+      border-radius:10px;
+      border:3px solid rgba(0,0,0,0.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .stat img{
+      width:40px;
+      height:40px;
+    }
+    .placeholder{
+      color:transparent
+    }
+    .swatches{
+      display:grid;
+      grid-template-columns:repeat(4,36px);
+      gap:8px;
+      margin-bottom:6px;
+    }
+    .swatch{
+      width:36px;
+      height:36px;
+      border-radius:8px;
+      border:2px solid rgba(0,0,0,0.06);
+      cursor:pointer;
+      transition: border-color 0.3s ease;
+    }
+    .swatch.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 5px var(--accent);
+    }
+    .hint{
+      font-size:13px;
+      color:#444;
+      margin-top:6px;
+    }
+    @media (max-width:520px){
+      .card-wrap{
+        transform:scale(0.9)
+      }
+    }
+    .num-inputs {
+      display: flex;
+      gap: 12px;
+    }
+    .num-inputs label {
+      padding: 0;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      cursor: default;
+    }
+    .bottom-row {
+      display: flex;
+      align-items: center;
+    }
+    .export-status {
+      margin-top: 5px;
+      font-size: 12px;
+      color: #666;
+      min-height: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <div class="swatches" id="colorSwatches">
+      <div class="swatch selected" style="background:#b92b2b" data-color="#b92b2b" data-icon="fire"></div>
+      <div class="swatch" style="background:#1f6fb4" data-color="#1f6fb4" data-icon="water"></div>
+      <div class="swatch" style="background:#2f7a3b" data-color="#2f7a3b" data-icon="land"></div>
+      <div class="swatch" style="background:#c69f18" data-color="#c69f18" data-icon="wind"></div>
+      <div class="swatch" style="background:#656565" data-color="#656565" data-icon="nocolor"></div>
+      <div class="swatch" style="background:#ff69b4" data-color="#ff69b4" data-icon="heart"></div>
+      <div class="swatch" style="background:#34495e" data-color="#34495e" data-icon="shadow"></div>
+      <div class="swatch" style="background:#f39c12" data-color="#f39c12" data-icon="light"></div>
+    </div>
+    <div class="num-inputs">
+      <label>コスト <input type="number" id="costInput" min="0" max="99" style="width:60px"></label>
+      <label>攻撃値 <input type="number" id="atkInput" min="0" max="999" style="width:60px"></label>
+      <label>防御値 <input type="number" id="defInput" min="0" max="999" style="width:60px"></label>
+    </div>
+    <label>カード名 <input type="text" id="nameInput" maxlength="20"></label>
+    <label>アート欄テキスト <input type="text" id="artInput" maxlength="30"></label>
+    <label>能力説明 <input type="text" id="abilityInput" maxlength="40"></label>
+    <label>属性アイコン
+      <div id="iconList" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <img src="fire.png" data-icon="fire" style="width:36px;height:36px;cursor:pointer;border:2px solid #b92b2b;border-radius:6px;">
+        <img src="water.png" data-icon="water" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+        <img src="land.png" data-icon="land" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+        <img src="wind.png" data-icon="wind" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+        <img src="nocolor.png" data-icon="nocolor" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+        <img src="item.png" data-icon="item" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+        <img src="spel.png" data-icon="spel" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+      </div>
+    </label>
+    <!-- 攻撃アイコン選択 -->
+    <label>攻撃アイコン
+      <div id="atkIconList" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <img src="sword.png" data-icon="sword" style="width:36px;height:36px;cursor:pointer;border:2px solid #b92b2b;border-radius:6px;">
+        <img src="claw.png" data-icon="claw" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+        <img src="bow.png" data-icon="bow" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+      </div>
+    </label>
+    <!-- 防御アイコン選択 -->
+    <label>防御アイコン
+      <div id="defIconList" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <img src="shield.png" data-icon="shield" style="width:36px;height:36px;cursor:pointer;border:2px solid #b92b2b;border-radius:6px;">
+        <img src="armor.png" data-icon="armor" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+        <img src="barrier.png" data-icon="barrier" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+      </div>
+    </label>
+    <label>アート画像 <input type="file" id="artImgInput" accept="image/*"></label>
+    <label><input type="checkbox" id="toggleStats" checked> 下部ステータス欄を表示</label>
+    <button id="exportBtn">PNGとして保存</button>
+    <div class="export-status" id="exportStatus"></div>
+    <label>フレーバーテキスト <input type="text" id="flavorInput" maxlength="40"></label>
+    <label>フォント
+      <select id="fontSelect">
+        <option value="system-ui,-apple-system,Segoe UI,Roboto,'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif">標準</option>
+        <option value="'Noto Sans JP',sans-serif">Noto Sans JP</option>
+        <option value="'Yu Gothic',sans-serif">游ゴシック</option>
+        <option value="'Meiryo',sans-serif">メイリオ</option>
+        <option value="'Arial',sans-serif">Arial</option>
+        <option value="'Times New Roman',serif">Times New Roman</option>
+      </select>
+    </label>
+  </div>
+  <div class="card-wrap" id="cardWrap">
+    <div class="card" id="card">
+      <div class="card-inner">
+        <div class="top-row">
+          <div class="cost-circle" id="cost">0</div>
+          <div class="name-box" id="nameBox">カード名</div>
+        </div>
+        <div class="art" id="art">
+          <span class="art-text" id="artText">アートワーク</span>
+        </div>
+        <div class="ability" id="ability">
+          <img class="icon" id="mainIcon" src="fire.png" alt="属性アイコン" />
+          <div class="ability-main" id="abilityText">能力説明</div>
+          <div class="ability-flavor" id="flavorText">フレーバーテキスト</div>
+        </div>
+        <div class="bottom-row" id="statsRow">
+          <div class="stat" id="atk">
+            <img id="atkIcon" src="sword.png" alt="攻撃アイコン" style="width:40px;height:40px;" />
+            <span id="atkValue" style="margin-left:6px;font-size:20px;">0</span>
+          </div>
+          <div style="flex:1"></div>
+          <div class="stat" id="def">
+            <img id="defIcon" src="shield.png" alt="防御アイコン" style="width:40px;height:40px;" />
+            <span id="defValue" style="margin-left:6px;font-size:20px;">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const swatches=document.querySelectorAll('.swatch');
+    const mainIcon=document.getElementById('mainIcon');
+    const atkIcon=document.getElementById('atkIcon');
+    const defIcon=document.getElementById('defIcon');
+    const toggleStats=document.getElementById('toggleStats');
+    const statsRow=document.getElementById('statsRow');
+    const ability=document.getElementById('ability');
+    const exportStatus = document.getElementById('exportStatus');
+
+    const icons={
+      fire:'fire.png',water:'water.png',land:'land.png',wind:'wind.png',nocolor:'nocolor.png',heart:'heart.png',shadow:'shadow.png',light:'light.png',item:'item.png',spel:'spel.png'
+    };
+
+    function setAccent(color){
+      document.documentElement.style.setProperty('--accent',color);
+    }
+    
+    function setIcon(name){
+      mainIcon.src = icons[name] || icons.fire;
+    }
+    
+    // 色スウォッチの選択表示
+    swatches.forEach(s=>{
+      s.addEventListener('click',()=>{
+        setAccent(s.dataset.color);
+        setIcon(s.dataset.icon);
+        // 選択中の枠を付ける
+        swatches.forEach(sw=>sw.classList.remove('selected'));
+        s.classList.add('selected');
+      });
+    });
+
+    toggleStats.addEventListener('change',()=>{
+      const show=toggleStats.checked;
+      statsRow.style.display=show?'flex':'none';
+      ability.style.flex=show?'0 0 120px':'1';
+    });
+
+    // 入力欄とカード要素の取得
+    const costInput = document.getElementById('costInput');
+    const nameInput = document.getElementById('nameInput');
+    const artInput = document.getElementById('artInput');
+    const abilityInput = document.getElementById('abilityInput');
+    const atkInput = document.getElementById('atkInput');
+    const defInput = document.getElementById('defInput');
+    const cost = document.getElementById('cost');
+    const nameBox = document.getElementById('nameBox');
+    const art = document.getElementById('art');
+    const abilityText = document.getElementById('abilityText');
+    const atkValue = document.getElementById('atkValue');
+    const defValue = document.getElementById('defValue');
+    const artText = document.getElementById('artText');
+    const flavorInput = document.getElementById('flavorInput');
+    const flavorText = document.getElementById('flavorText');
+    const artImgInput = document.getElementById('artImgInput');
+
+    // 入力イベントでカードに反映
+    costInput.addEventListener('input', ()=>{ cost.textContent = costInput.value || '0'; });
+    nameInput.addEventListener('input', ()=>{ nameBox.textContent = nameInput.value || 'カード名'; });
+    artInput.addEventListener('input', ()=>{ artText.textContent = artInput.value || 'アートワーク'; });
+    abilityInput.addEventListener('input', ()=>{ abilityText.textContent = abilityInput.value || '能力説明'; });
+    atkInput.addEventListener('input', ()=>{ atkValue.textContent = atkInput.value || '0'; });
+    defInput.addEventListener('input', ()=>{ defValue.textContent = defInput.value || '0'; });
+    flavorInput.addEventListener('input', ()=>{ flavorText.textContent = flavorInput.value || 'フレーバーテキスト'; });
+
+    // 初期値設定
+    setAccent('#b92b2b');
+    setIcon('fire');
+
+    // PNG保存処理（擬似要素対応版）
+    document.getElementById('exportBtn').addEventListener('click', async ()=>{
+      exportStatus.textContent = '保存中...';
+      exportStatus.style.color = '#666';
+      
+      try {
+        const cardWrap = document.getElementById('cardWrap');
+        
+        // アート画像がある場合、擬似要素を実際のimg要素に置き換え
+        let tempImg = null;
+        if (art.classList.contains('has-image')) {
+          const artImgUrl = art.style.getPropertyValue('--art-img').replace(/^url\(['"]?/, '').replace(/['"]?\)$/, '');
+          tempImg = document.createElement('img');
+          tempImg.src = artImgUrl;
+          tempImg.style.cssText = 'position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;border-radius:7px;';
+          art.appendChild(tempImg);
+          
+          // 擬似要素を一時的に非表示
+          const styleSheet = document.createElement('style');
+          styleSheet.textContent = '.art.has-image::before { display: none !important; }';
+          document.head.appendChild(styleSheet);
+          
+          // 画像の読み込みを待つ
+          await new Promise((resolve) => {
+            if (tempImg.complete) {
+              resolve();
+            } else {
+              tempImg.onload = resolve;
+              tempImg.onerror = resolve;
+            }
+          });
+          
+          setTimeout(async () => {
+            const canvas = await html2canvas(cardWrap, {
+              backgroundColor: '#f6f6f6',
+              scale: 2,
+              useCORS: true,
+              allowTaint: true,
+              logging: false,
+              width: cardWrap.offsetWidth,
+              height: cardWrap.offsetHeight
+            });
+            
+            // 後始末
+            if (tempImg && tempImg.parentNode) {
+              tempImg.parentNode.removeChild(tempImg);
+            }
+            if (styleSheet && styleSheet.parentNode) {
+              styleSheet.parentNode.removeChild(styleSheet);
+            }
+            
+            downloadCanvas(canvas);
+          }, 100);
+        } else {
+          // 画像がない場合は通常処理
+          const canvas = await html2canvas(cardWrap, {
+            backgroundColor: '#f6f6f6',
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            width: cardWrap.offsetWidth,
+            height: cardWrap.offsetHeight
+          });
+          
+          downloadCanvas(canvas);
+        }
+        
+      } catch (error) {
+        console.error('保存エラー:', error);
+        exportStatus.textContent = '保存に失敗しました。もう一度お試しください。';
+        exportStatus.style.color = '#e74c3c';
+        
+        setTimeout(() => {
+          exportStatus.textContent = '';
+        }, 5000);
+      }
+    });
+    
+    function downloadCanvas(canvas) {
+      const link = document.createElement('a');
+      const currentDate = new Date();
+      const timestamp = currentDate.getFullYear() + 
+                       String(currentDate.getMonth() + 1).padStart(2, '0') + 
+                       String(currentDate.getDate()).padStart(2, '0') + '_' +
+                       String(currentDate.getHours()).padStart(2, '0') + 
+                       String(currentDate.getMinutes()).padStart(2, '0');
+      
+      link.download = `card_${timestamp}.png`;
+      link.href = canvas.toDataURL('image/png');
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      exportStatus.textContent = '保存完了！';
+      exportStatus.style.color = '#27ae60';
+      
+      setTimeout(() => {
+        exportStatus.textContent = '';
+      }, 3000);
+    }
+
+    // 属性アイコン選択
+    document.querySelectorAll('#iconList img').forEach(img => {
+      img.addEventListener('click', function() {
+        mainIcon.src = this.src;
+        document.querySelectorAll('#iconList img').forEach(i => i.style.borderColor = '#ccc');
+        this.style.borderColor = '#b92b2b';
+      });
+    });
+
+    // アート画像読み込み
+    artImgInput.addEventListener('change',e=>{
+      const file=e.target.files[0];
+      if(file){
+        const url=URL.createObjectURL(file);
+        art.classList.add('has-image');
+        art.style.setProperty('--art-img', `url('${url}')`);
+      }else{
+        art.classList.remove('has-image');
+        art.style.removeProperty('--art-img');
+      }
+    });
+
+    // フォント選択
+    document.getElementById('fontSelect').addEventListener('change', function() {
+      document.body.style.fontFamily = this.value;
+    });
+
+    // 攻撃アイコン選択
+    document.querySelectorAll('#atkIconList img').forEach(img => {
+      img.addEventListener('click', function() {
+        atkIcon.src = this.src;
+        document.querySelectorAll('#atkIconList img').forEach(i => i.style.borderColor = '#ccc');
+        this.style.borderColor = '#b92b2b';
+      });
+    });
+
+    // 防御アイコン選択
+    document.querySelectorAll('#defIconList img').forEach(img => {
+      img.addEventListener('click', function() {
+        defIcon.src = this.src;
+        document.querySelectorAll('#defIconList img').forEach(i => i.style.borderColor = '#ccc');
+        this.style.borderColor = '#b92b2b';
+      });
+    });
+  </script>
+</body>
+</html>
