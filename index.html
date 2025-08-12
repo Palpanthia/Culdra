@@ -532,17 +532,25 @@
     });
 
     // アート画像読み込み
-    artImgInput.addEventListener('change',e=>{
-      const file=e.target.files[0];
-      if(file){
-        const url=URL.createObjectURL(file);
-        art.classList.add('has-image');
-        art.style.setProperty('--art-img', `url('${url}')`);
-      }else{
-        art.classList.remove('has-image');
-        art.style.removeProperty('--art-img');
-      }
-    });
+    artImgInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) {
+    art.classList.remove('has-image');
+    art.style.removeProperty('--art-img');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const dataUrl = evt.target.result;
+    art.classList.add('has-image');
+    // 擬似要素ではなく直接background-imageに設定
+    art.style.backgroundImage = `url('${dataUrl}')`;
+    // 擬似要素用のカスタムプロパティは外す
+    art.style.removeProperty('--art-img');
+  };
+  reader.readAsDataURL(file);
+});
+
 
     // フォント選択
     document.getElementById('fontSelect').addEventListener('change', function() {
