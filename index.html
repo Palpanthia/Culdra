@@ -123,9 +123,10 @@
       color:#333;
       background:rgba(255,255,255,0.0);
     }
-    .art.has-image .art-text{
-      display:none;
-    }
+.art.has-image::before {
+  content: none !important;
+}
+
     .ability{
       flex:0 0 120px;
       background:#fff;
