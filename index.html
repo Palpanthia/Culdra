@@ -43,7 +43,7 @@
       width:var(--card-width);
       height:var(--card-height);
       background:linear-gradient(180deg,rgba(0,0,0,0.04),rgba(255,255,255,0.02));
-      padding:0px;
+      padding:18px;
       border-radius:calc(var(--frame-radius) + 6px);
       box-shadow:0 6px 18px rgba(0,0,0,0.12)
     }
@@ -123,10 +123,9 @@
       color:#333;
       background:rgba(255,255,255,0.0);
     }
-.art.has-image::before {
-  content: none !important;
-}
-
+    .art.has-image .art-text{
+      display:none;
+    }
     .ability{
       flex:0 0 120px;
       background:#fff;
@@ -417,76 +416,88 @@
     setAccent('#b92b2b');
     setIcon('fire');
 
-    // PNG保存処理（画像比率修正版）
+    // PNG保存処理（余白なし・中身拡大版）
     document.getElementById('exportBtn').addEventListener('click', async ()=>{
       exportStatus.textContent = '保存中...';
       exportStatus.style.color = '#666';
       
       try {
         const cardWrap = document.getElementById('cardWrap');
+        const card = document.getElementById('card');
         
-        // アート画像がある場合の処理を改善
-        let tempImg = null;
+        // 固定サイズを設定
+        const fixedWidth = 420;
+        const fixedHeight = 660;
+        
+        // 元のスタイルを保存
+        const originalCardWrapStyle = cardWrap.style.cssText;
+        const originalCardStyle = card.style.cssText;
+        
+        // カードラップの余白を削除して中身を拡大
+        cardWrap.style.width = fixedWidth + 'px';
+        cardWrap.style.height = fixedHeight + 'px';
+        cardWrap.style.minWidth = fixedWidth + 'px';
+        cardWrap.style.minHeight = fixedHeight + 'px';
+        cardWrap.style.maxWidth = fixedWidth + 'px';
+        cardWrap.style.maxHeight = fixedHeight + 'px';
+        cardWrap.style.padding = '0';  // 余白をなくす
+        cardWrap.style.flexShrink = '0';
+        cardWrap.style.position = 'relative';
+        
+        // カード自体のサイズを調整（余白分を考慮して拡大）
+        card.style.width = '100%';
+        card.style.height = '100%';
+        card.style.borderRadius = '18px';  // 元の--frame-radius
+        
+        // レイアウトの再計算を待つ
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // アート画像がある場合の処理
         let originalBackground = null;
+        let styleSheet = null;
         
         if (art.classList.contains('has-image')) {
           const artImgUrl = art.style.getPropertyValue('--art-img').replace(/^url\(['"]?/, '').replace(/['"]?\)$/, '');
           
           // 擬似要素を無効化
-          const styleSheet = document.createElement('style');
+          styleSheet = document.createElement('style');
           styleSheet.textContent = '.art.has-image::before { display: none !important; }';
           document.head.appendChild(styleSheet);
           
-          // 背景画像として直接設定（object-fitの代わり）
+          // 背景画像として直接設定
           originalBackground = art.style.background;
           art.style.background = `url('${artImgUrl}') center/cover no-repeat`;
           art.style.backgroundSize = 'cover';
           art.style.backgroundPosition = 'center';
           art.style.backgroundRepeat = 'no-repeat';
           
-          // 少し待ってからキャンバス化
           await new Promise(resolve => setTimeout(resolve, 200));
-          
-          const canvas = await html2canvas(cardWrap, {
-            backgroundColor: '#f6f6f6',
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            logging: false,
-            width: cardWrap.offsetWidth,
-            height: cardWrap.offsetHeight,
-            onclone: function(clonedDoc) {
-              // クローンされたドキュメント内でも背景画像を確実に設定
-              const clonedArt = clonedDoc.querySelector('.art');
-              if (clonedArt) {
-                clonedArt.style.background = `url('${artImgUrl}') center/cover no-repeat`;
-                clonedArt.style.backgroundSize = 'cover';
-                clonedArt.style.backgroundPosition = 'center';
-              }
-            }
-          });
-          
-          // 元に戻す
-          art.style.background = originalBackground;
-          if (styleSheet && styleSheet.parentNode) {
-            styleSheet.parentNode.removeChild(styleSheet);
-          }
-          
-          downloadCanvas(canvas);
-        } else {
-          // 画像がない場合は通常処理
-          const canvas = await html2canvas(cardWrap, {
-            backgroundColor: '#f6f6f6',
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            logging: false,
-            width: cardWrap.offsetWidth,
-            height: cardWrap.offsetHeight
-          });
-          
-          downloadCanvas(canvas);
         }
+        
+        // 余白なしでキャンバス化
+        const canvas = await html2canvas(cardWrap, {
+          backgroundColor: null,  // 透明背景
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          width: fixedWidth,
+          height: fixedHeight,
+          windowWidth: fixedWidth,
+          windowHeight: fixedHeight
+        });
+        
+        // 元に戻す
+        cardWrap.style.cssText = originalCardWrapStyle;
+        card.style.cssText = originalCardStyle;
+        if (art.classList.contains('has-image') && originalBackground !== null) {
+          art.style.background = originalBackground;
+        }
+        if (styleSheet && styleSheet.parentNode) {
+          styleSheet.parentNode.removeChild(styleSheet);
+        }
+        
+        downloadCanvas(canvas);
         
       } catch (error) {
         console.error('保存エラー:', error);
@@ -533,25 +544,17 @@
     });
 
     // アート画像読み込み
-    artImgInput.addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file) {
-    art.classList.remove('has-image');
-    art.style.removeProperty('--art-img');
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    const dataUrl = evt.target.result;
-    art.classList.add('has-image');
-    // 擬似要素ではなく直接background-imageに設定
-    art.style.backgroundImage = `url('${dataUrl}')`;
-    // 擬似要素用のカスタムプロパティは外す
-    art.style.removeProperty('--art-img');
-  };
-  reader.readAsDataURL(file);
-});
-
+    artImgInput.addEventListener('change',e=>{
+      const file=e.target.files[0];
+      if(file){
+        const url=URL.createObjectURL(file);
+        art.classList.add('has-image');
+        art.style.setProperty('--art-img', `url('${url}')`);
+      }else{
+        art.classList.remove('has-image');
+        art.style.removeProperty('--art-img');
+      }
+    });
 
     // フォント選択
     document.getElementById('fontSelect').addEventListener('change', function() {
