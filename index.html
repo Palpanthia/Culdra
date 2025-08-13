@@ -420,53 +420,16 @@
       exportStatus.style.color = '#666';
       
       try {
-        const cardWrap = document.getElementById('cardWrap');
         const card = document.getElementById('card');
         
-        // 固定サイズを設定
-        const fixedWidth = 420;
-        const fixedHeight = 660;
-        
-        // 元のスタイルを保存
-        const originalCardWrapStyle = cardWrap.style.cssText;
-        const originalCardStyle = card.style.cssText;
-        
-        // カードラップの余白を削除して中身を拡大
-        cardWrap.style.width = fixedWidth + 'px';
-        cardWrap.style.height = fixedHeight + 'px';
-        cardWrap.style.minWidth = fixedWidth + 'px';
-        cardWrap.style.minHeight = fixedHeight + 'px';
-        cardWrap.style.maxWidth = fixedWidth + 'px';
-        cardWrap.style.maxHeight = fixedHeight + 'px';
-        cardWrap.style.padding = '0';  // 余白をなくす
-        cardWrap.style.flexShrink = '0';
-        cardWrap.style.position = 'relative';
-        
-        // カード自体のサイズを調整（余白分を考慮して拡大）
-        card.style.width = '100%';
-        card.style.height = '100%';
-        card.style.borderRadius = '18px';  // 元の--frame-radius
-        
-        // レイアウトの再計算を待つ
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        // 余白なしでキャンバス化（高画質設定）
-        const canvas = await html2canvas(cardWrap, {
-          backgroundColor: null,  // 透明背景
-          scale: 4,  // 2倍→4倍に変更（より高画質）
+        // カードのみを直接キャプチャ（余白なし）
+        const canvas = await html2canvas(card, {
+          backgroundColor: null,
+          scale: 2,
           useCORS: true,
           allowTaint: true,
-          logging: false,
-          width: fixedWidth,
-          height: fixedHeight,
-          windowWidth: fixedWidth,
-          windowHeight: fixedHeight,
-          dpi: 300  // DPI設定を追加
+          logging: false
         });
-        
-        // 元に戻す
-        cardWrap.style.cssText = originalCardWrapStyle;
-        card.style.cssText = originalCardStyle;
         
         downloadCanvas(canvas);
         
@@ -491,7 +454,7 @@
                        String(currentDate.getMinutes()).padStart(2, '0');
       
       link.download = `card_${timestamp}.png`;
-      link.href = canvas.toDataURL('image/png', 1.0);  // 最高品質で保存
+      link.href = canvas.toDataURL('image/png');
       
       document.body.appendChild(link);
       link.click();
