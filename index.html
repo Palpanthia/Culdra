@@ -7,8 +7,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root{
-      --card-width:420px;
-      --card-height:660px;
+      --card-width:500px;
+      --card-height:780px;
       --accent:#b92b2b;
       --accent-contrast:#fff6f4;
       --frame-radius:18px;
@@ -424,8 +424,8 @@
         const card = document.getElementById('card');
         
         // 固定サイズを設定
-        const fixedWidth = 420;
-        const fixedHeight = 660;
+        const fixedWidth = 500;
+        const fixedHeight = 780;
         
         // 元のスタイルを保存
         const originalCardWrapStyle = cardWrap.style.cssText;
@@ -452,7 +452,7 @@
         
         // 余白なしでキャンバス化（高画質設定）
         const canvas = await html2canvas(cardWrap, {
-          backgroundColor: null,  // 透明背景
+          backgroundColor: '#f6f6f6',  // 背景色を設定（透明→グレー）
           scale: 4,  // 高画質化（2→4倍）
           useCORS: true,
           allowTaint: true,
