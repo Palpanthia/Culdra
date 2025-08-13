@@ -450,17 +450,19 @@
         // レイアウトの再計算を待つ
         await new Promise(resolve => setTimeout(resolve, 100));
         
-        // 余白なしでキャンバス化
+        // 余白なしでキャンバス化（高画質設定）
         const canvas = await html2canvas(cardWrap, {
           backgroundColor: null,  // 透明背景
-          scale: 2,
+          scale: 4,  // 高画質化（2→4倍）
           useCORS: true,
           allowTaint: true,
           logging: false,
           width: fixedWidth,
           height: fixedHeight,
           windowWidth: fixedWidth,
-          windowHeight: fixedHeight
+          windowHeight: fixedHeight,
+          dpi: 300,  // DPI設定追加
+          letterRendering: true  // テキストの品質向上
         });
         
         // 元に戻す
