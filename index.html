@@ -210,6 +210,34 @@
       width:40px;
       height:40px;
     }
+    .bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .extra-icons {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
+    }
+    .extra-icon {
+      width: 40px;
+      height: 40px;
+      background: #fff;
+      border-radius: 8px;
+      border: 2px solid rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .extra-icon img {
+      width: 36px;
+      height: 36px;
+      opacity: 0.9;
+    }
     .placeholder{
       color:transparent
     }
@@ -261,10 +289,6 @@
       background: none;
       cursor: default;
     }
-    .bottom-row {
-      display: flex;
-      align-items: center;
-    }
     .export-status {
       margin-top: 5px;
       font-size: 12px;
@@ -302,6 +326,8 @@
         <img src="nocolor.png" data-icon="nocolor" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
         <img src="item.png" data-icon="item" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
         <img src="spel.png" data-icon="spel" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+        <img src="divine.png" data-icon="divine" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+        <img src="dark.png" data-icon="dark" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
       </div>
     </label>
     <!-- 攻撃アイコン選択 -->
@@ -318,6 +344,14 @@
         <img src="shield.png" data-icon="shield" style="width:36px;height:36px;cursor:pointer;border:2px solid #b92b2b;border-radius:6px;">
         <img src="armor.png" data-icon="armor" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
         <img src="barrier.png" data-icon="barrier" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+      </div>
+    </label>
+    <!-- 追加アイコン選択 -->
+    <label>追加効果アイコン（3種類から選択）
+      <div id="extraIconList" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+        <img src="speed.png" data-icon="speed" data-slot="1" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="スピード">
+        <img src="poison.png" data-icon="poison" data-slot="2" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="毒">
+        <img src="heal.png" data-icon="heal" data-slot="3" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="回復">
       </div>
     </label>
     <label>アート画像 <input type="file" id="artImgInput" accept="image/*"></label>
@@ -349,15 +383,25 @@
         </div>
         <div class="ability" id="ability">
           <img class="icon" id="mainIcon" src="fire.png" alt="属性アイコン" />
-          <div class="ability-main" id="abilityText"></div>
-          <div class="ability-flavor" id="flavorText"></div>
+          <div class="ability-main" id="abilityText">能力説明</div>
+          <div class="ability-flavor" id="flavorText">フレーバーテキスト</div>
         </div>
         <div class="bottom-row" id="statsRow">
           <div class="stat" id="atk">
             <img id="atkIcon" src="sword.png" alt="攻撃アイコン" style="width:40px;height:40px;" />
             <span id="atkValue" style="margin-left:6px;font-size:20px;">0</span>
           </div>
-          <div style="flex:1"></div>
+          <div class="extra-icons" id="extraIcons">
+            <div class="extra-icon" id="extraIcon1" style="display:none;">
+              <img src="" alt="スピード" style="width:36px;height:36px;" />
+            </div>
+            <div class="extra-icon" id="extraIcon2" style="display:none;">
+              <img src="" alt="毒" style="width:36px;height:36px;" />
+            </div>
+            <div class="extra-icon" id="extraIcon3" style="display:none;">
+              <img src="" alt="回復" style="width:36px;height:36px;" />
+            </div>
+          </div>
           <div class="stat" id="def">
             <img id="defIcon" src="shield.png" alt="防御アイコン" style="width:40px;height:40px;" />
             <span id="defValue" style="margin-left:6px;font-size:20px;">0</span>
@@ -377,7 +421,7 @@
     const exportStatus = document.getElementById('exportStatus');
 
     const icons={
-      fire:'fire.png',water:'water.png',land:'land.png',wind:'wind.png',nocolor:'nocolor.png',heart:'heart.png',shadow:'shadow.png',light:'light.png',item:'item.png',spel:'spel.png'
+      fire:'fire.png',water:'water.png',land:'land.png',wind:'wind.png',nocolor:'nocolor.png',heart:'heart.png',shadow:'shadow.png',light:'light.png',item:'item.png',spel:'spel.png',divine:'divine.png',dark:'dark.png'
     };
 
     function setAccent(color){
@@ -533,6 +577,28 @@
         defIcon.src = this.src;
         document.querySelectorAll('#defIconList img').forEach(i => i.style.borderColor = '#ccc');
         this.style.borderColor = '#b92b2b';
+      });
+    });
+
+    // 追加アイコン選択の処理（3種類専用）
+    document.querySelectorAll('#extraIconList img').forEach(img => {
+      img.addEventListener('click', function() {
+        const slot = this.dataset.slot;
+        const iconElement = document.getElementById(`extraIcon${slot}`);
+        const iconImg = iconElement.querySelector('img');
+        
+        // 選択/非選択の切り替え
+        if (this.style.borderColor === 'rgb(185, 43, 43)') {
+          // 選択解除
+          this.style.borderColor = '#ccc';
+          iconElement.style.display = 'none';
+          iconImg.src = '';
+        } else {
+          // 選択
+          this.style.borderColor = '#b92b2b';
+          iconElement.style.display = 'flex';
+          iconImg.src = this.src;
+        }
       });
     });
   </script>
