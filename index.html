@@ -111,7 +111,8 @@
       font-weight:700;
     }
     .art{
-      flex:1;
+      flex:0 0 300px;
+      height:300px;
       background:#fff;
       border-radius:10px;
       border:3px solid rgba(0,0,0,0.06);
@@ -156,7 +157,8 @@
     }
     .ability{
       flex:0 0 120px;
-      min-height:120px;
+      min-height:60px;
+      max-height:120px;
       background:#fff;
       border-radius:10px;
       border:3px solid rgba(0,0,0,0.06);
@@ -165,7 +167,7 @@
       align-items:center;
       justify-content:flex-start;
       position:relative;
-      transition:flex-basis 0.3s;
+      transition:all 0.3s;
       padding:10px 10px 6px 100px;
     }
     .ability .icon{
@@ -176,6 +178,7 @@
       left:0;
       top:50%;
       transform:translateY(-50%);
+      transition: all 0.3s ease;
     }
     .ability-main{
       width:100%;
@@ -212,21 +215,43 @@
     }
     .bottom-row {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
+      min-height: 64px;
     }
     .extra-icons {
       display: flex;
-      gap: 8px;
+      gap: 4px;
+      align-items: flex-start;
+      justify-content: center;
+      flex: 1;
+      flex-wrap: wrap;
+      max-width: 200px;
+      flex-direction: column;
+      overflow: visible;
+      padding: 2px 0;
+    }
+    .extra-icons-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 2px;
+      display: none;
+    }
+    .extra-icons-container {
+      display: flex;
+      gap: 3px;
       align-items: center;
       justify-content: center;
-      min-width: 120px;
+      flex-wrap: wrap;
+      max-height: 60px;
+      overflow: visible;
     }
     .extra-icon {
-      width: 40px;
-      height: 40px;
+      width: 30px;
+      height: 30px;
       background: #fff;
-      border-radius: 8px;
+      border-radius: 6px;
       border: 2px solid rgba(0,0,0,0.06);
       display: flex;
       align-items: center;
@@ -234,8 +259,8 @@
       flex-shrink: 0;
     }
     .extra-icon img {
-      width: 36px;
-      height: 36px;
+      width: 26px;
+      height: 26px;
       opacity: 0.9;
     }
     .placeholder{
@@ -315,7 +340,7 @@
       <label>防御値 <input type="number" id="defInput" min="0" max="999" style="width:60px"></label>
     </div>
     <label>カード名 <input type="text" id="nameInput" maxlength="20"></label>
-    <label>アート欄テキスト <input type="text" id="artInput" maxlength="30"></label>
+    <label>アート欄テキスト(デバッグ用) <input type="text" id="artInput" maxlength="30"></label>
     <label>能力説明 <input type="text" id="abilityInput" maxlength="40"></label>
     <label>属性アイコン
       <div id="iconList" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
@@ -326,38 +351,43 @@
         <img src="nocolor.png" data-icon="nocolor" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
         <img src="item.png" data-icon="item" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
         <img src="spel.png" data-icon="spel" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
-        <img src="divine.png" data-icon="divine" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
-        <img src="dark.png" data-icon="dark" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+        <img src="heart.png" data-icon="heart" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+        <img src="shadow.png" data-icon="shadow" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
+        <img src="light.png" data-icon="light" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
       </div>
     </label>
     <!-- 攻撃アイコン選択 -->
-    <label>攻撃アイコン
+    <!--<label>攻撃アイコン
       <div id="atkIconList" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
         <img src="sword.png" data-icon="sword" style="width:36px;height:36px;cursor:pointer;border:2px solid #b92b2b;border-radius:6px;">
         <img src="claw.png" data-icon="claw" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
         <img src="bow.png" data-icon="bow" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
       </div>
     </label>
-    <!-- 防御アイコン選択 -->
     <label>防御アイコン
       <div id="defIconList" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
         <img src="shield.png" data-icon="shield" style="width:36px;height:36px;cursor:pointer;border:2px solid #b92b2b;border-radius:6px;">
         <img src="armor.png" data-icon="armor" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
         <img src="barrier.png" data-icon="barrier" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;">
       </div>
-    </label>
+    </label>-->
     <!-- 追加アイコン選択 -->
-    <label>追加効果アイコン（3種類から選択）
+    <label>制限（複数選択可能）
       <div id="extraIconList" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
-        <img src="speed.png" data-icon="speed" data-slot="1" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="スピード">
-        <img src="poison.png" data-icon="poison" data-slot="2" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="毒">
-        <img src="heal.png" data-icon="heal" data-slot="3" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="回復">
+        <img src="fire.png" data-icon="fire" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="火">
+        <img src="water.png" data-icon="water" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="水">
+        <img src="land.png" data-icon="land" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="土">
+        <img src="wind.png" data-icon="wind" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="風">
+        <img src="nocolor.png" data-icon="nocolor" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="無色">
+        <img src="item.png" data-icon="item" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="アイテム">
+        <img src="spel.png" data-icon="spel" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="スペル">
+        <img src="heart.png" data-icon="heart" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="ハート">
+        <img src="shadow.png" data-icon="shadow" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="闇">
+        <!--<img src="light.png" data-icon="light" style="width:36px;height:36px;cursor:pointer;border:2px solid #ccc;border-radius:6px;" title="光">-->
       </div>
     </label>
     <label>アート画像 <input type="file" id="artImgInput" accept="image/*"></label>
     <label><input type="checkbox" id="toggleStats" checked> 下部ステータス欄を表示</label>
-    <button id="exportBtn">PNGとして保存</button>
-    <div class="export-status" id="exportStatus"></div>
     <label>フレーバーテキスト <input type="text" id="flavorInput" maxlength="40"></label>
     <label>フォント
       <select id="fontSelect">
@@ -369,6 +399,8 @@
         <option value="'Times New Roman',serif">Times New Roman</option>
       </select>
     </label>
+    <button id="exportBtn">PNGとして保存</button>
+    <div class="export-status" id="exportStatus"></div>
   </div>
   <div class="card-wrap" id="cardWrap">
     <div class="card" id="card">
@@ -383,8 +415,8 @@
         </div>
         <div class="ability" id="ability">
           <img class="icon" id="mainIcon" src="fire.png" alt="属性アイコン" />
-          <div class="ability-main" id="abilityText">能力説明</div>
-          <div class="ability-flavor" id="flavorText">フレーバーテキスト</div>
+          <div class="ability-main" id="abilityText"></div>
+          <div class="ability-flavor" id="flavorText"></div>
         </div>
         <div class="bottom-row" id="statsRow">
           <div class="stat" id="atk">
@@ -392,14 +424,9 @@
             <span id="atkValue" style="margin-left:6px;font-size:20px;">0</span>
           </div>
           <div class="extra-icons" id="extraIcons">
-            <div class="extra-icon" id="extraIcon1" style="display:none;">
-              <img src="" alt="スピード" style="width:36px;height:36px;" />
-            </div>
-            <div class="extra-icon" id="extraIcon2" style="display:none;">
-              <img src="" alt="毒" style="width:36px;height:36px;" />
-            </div>
-            <div class="extra-icon" id="extraIcon3" style="display:none;">
-              <img src="" alt="回復" style="width:36px;height:36px;" />
+            <div class="extra-icons-label" id="extraIconsLabel">制限</div>
+            <div class="extra-icons-container" id="extraIconsContainer">
+              <!-- 動的に生成されるアイコンがここに入る -->
             </div>
           </div>
           <div class="stat" id="def">
@@ -421,7 +448,7 @@
     const exportStatus = document.getElementById('exportStatus');
 
     const icons={
-      fire:'fire.png',water:'water.png',land:'land.png',wind:'wind.png',nocolor:'nocolor.png',heart:'heart.png',shadow:'shadow.png',light:'light.png',item:'item.png',spel:'spel.png',divine:'divine.png',dark:'dark.png'
+      fire:'fire.png',water:'water.png',land:'land.png',wind:'wind.png',nocolor:'nocolor.png',heart:'heart.png',shadow:'shadow.png',light:'light.png',item:'item.png',spel:'spel.png'
     };
 
     function setAccent(color){
@@ -446,8 +473,83 @@
     toggleStats.addEventListener('change',()=>{
       const show=toggleStats.checked;
       statsRow.style.display=show?'flex':'none';
-      ability.style.flex=show?'0 0 120px':'1';
+      updateAbilityHeight();
     });
+
+    // 能力欄の高さを動的に調整する関数
+    function updateAbilityHeight() {
+      const extraIconCount = selectedExtraIcons.length;
+      const isStatsVisible = toggleStats.checked;
+      const mainIcon = document.getElementById('mainIcon');
+      
+      if (!isStatsVisible) {
+        // ステータス欄が非表示の場合、残りのスペースを能力欄が使用
+        if (extraIconCount <= 3) {
+          ability.style.flex = '1';
+          ability.style.minHeight = '180px';
+          ability.style.maxHeight = 'none';
+          mainIcon.style.width = '88px';
+          mainIcon.style.height = '88px';
+          ability.style.paddingLeft = '100px';
+        } else if (extraIconCount <= 6) {
+          ability.style.flex = '1';
+          ability.style.minHeight = '160px';
+          ability.style.maxHeight = 'none';
+          mainIcon.style.width = '88px';
+          mainIcon.style.height = '88px';
+          ability.style.paddingLeft = '100px';
+        } else if (extraIconCount <= 8) {
+          ability.style.flex = '1';
+          ability.style.minHeight = '140px';
+          ability.style.maxHeight = 'none';
+          mainIcon.style.width = '88px';
+          mainIcon.style.height = '88px';
+          ability.style.paddingLeft = '100px';
+        } else {
+          ability.style.flex = '1';
+          ability.style.minHeight = '120px';
+          ability.style.maxHeight = 'none';
+          mainIcon.style.width = '88px';
+          mainIcon.style.height = '88px';
+          ability.style.paddingLeft = '100px';
+        }
+      } else {
+        // ステータス欄が表示されている場合
+        if (extraIconCount <= 3) {
+          // アイコンが3個以下なら標準の高さ
+          ability.style.flex = '0 0 120px';
+          ability.style.minHeight = '120px';
+          ability.style.maxHeight = '120px';
+          mainIcon.style.width = '88px';
+          mainIcon.style.height = '88px';
+          ability.style.paddingLeft = '100px';
+        } else if (extraIconCount <= 6) {
+          // アイコンが4-6個なら少し縮める
+          ability.style.flex = '0 0 100px';
+          ability.style.minHeight = '100px';
+          ability.style.maxHeight = '100px';
+          mainIcon.style.width = '72px';
+          mainIcon.style.height = '72px';
+          ability.style.paddingLeft = '84px';
+        } else if (extraIconCount <= 8) {
+          // アイコンが7-9個なら更に縮める
+          ability.style.flex = '0 0 80px';
+          ability.style.minHeight = '80px';
+          ability.style.maxHeight = '80px';
+          mainIcon.style.width = '60px';
+          mainIcon.style.height = '60px';
+          ability.style.paddingLeft = '72px';
+        } else {
+          // アイコンが10個以上なら最小に
+          ability.style.flex = '0 0 60px';
+          ability.style.minHeight = '60px';
+          ability.style.maxHeight = '60px';
+          mainIcon.style.width = '48px';
+          mainIcon.style.height = '48px';
+          ability.style.paddingLeft = '60px';
+        }
+      }
+    }
 
     // 入力欄とカード要素の取得
     const costInput = document.getElementById('costInput');
@@ -580,27 +682,53 @@
       });
     });
 
-    // 追加アイコン選択の処理（3種類専用）
+    // 追加効果アイコン選択の処理（複数選択可能）
+    let selectedExtraIcons = [];
+    
     document.querySelectorAll('#extraIconList img').forEach(img => {
       img.addEventListener('click', function() {
-        const slot = this.dataset.slot;
-        const iconElement = document.getElementById(`extraIcon${slot}`);
-        const iconImg = iconElement.querySelector('img');
+        const iconName = this.dataset.icon;
+        const iconSrc = this.src;
         
-        // 選択/非選択の切り替え
-        if (this.style.borderColor === 'rgb(185, 43, 43)') {
-          // 選択解除
+        // すでに選択されている場合は削除
+        const index = selectedExtraIcons.findIndex(item => item.name === iconName);
+        if (index !== -1) {
+          selectedExtraIcons.splice(index, 1);
           this.style.borderColor = '#ccc';
-          iconElement.style.display = 'none';
-          iconImg.src = '';
         } else {
-          // 選択
+          // 新しく追加
+          selectedExtraIcons.push({ name: iconName, src: iconSrc });
           this.style.borderColor = '#b92b2b';
-          iconElement.style.display = 'flex';
-          iconImg.src = this.src;
         }
+        
+        // 表示を更新
+        updateExtraIcons();
       });
     });
+    
+    function updateExtraIcons() {
+      const container = document.getElementById('extraIconsContainer');
+      const label = document.getElementById('extraIconsLabel');
+      container.innerHTML = ''; // 既存のアイコンをクリア
+      
+      if (selectedExtraIcons.length > 0) {
+        // アイコンがある場合は「制限」ラベルを表示
+        label.style.display = 'block';
+        
+        selectedExtraIcons.forEach(icon => {
+          const iconElement = document.createElement('div');
+          iconElement.className = 'extra-icon';
+          iconElement.innerHTML = `<img src="${icon.src}" alt="${icon.name}" style="width:26px;height:26px;" />`;
+          container.appendChild(iconElement);
+        });
+      } else {
+        // アイコンがない場合は「制限」ラベルを非表示
+        label.style.display = 'none';
+      }
+
+      // 能力欄の高さを更新
+      updateAbilityHeight();
+    }
   </script>
 </body>
 </html>
